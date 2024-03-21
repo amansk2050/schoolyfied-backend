@@ -1,28 +1,46 @@
-import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { UsersModule } from '../users/users.module';
-import { JwtModule } from '@nestjs/jwt';
-import { AuthController } from './auth.controller';
-import { jwtConstants } from './constants';
-import { AuthGuard } from './auth.guard';
-import { APP_GUARD } from '@nestjs/core';
+import { Module } from "@nestjs/common";
+import { AuthService } from "./auth.service";
+import { AuthController } from "./auth.controller";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { UserRepository } from "../user/repositories/user.repository";
+import { PassportModule } from "@nestjs/passport";
+import { JwtModule } from "@nestjs/jwt";
+import { LocalStrategy } from "./strategies/local.strategy";
+import { JwtStrategy } from "./strategies/jwt.strategy";
+import { MailModule } from "../mail/mail.module";
+import { GoogleStrategy } from "./strategies/google.strategy";
+
+/**
+ * It is a feature module where we keep the controller, service and other code related to authentication and  we import other modules and configure modules and packages that are being used in this module.
+ *
+ * Here, feature modules imported are - DatabaseModule, AuthModule, MailModule and UserModule.
+ * other modules are :
+ *      TypeOrmModule - it is an ORM and enables easy access to database.
+ *      PassportModule - it enables us to setup multiple types of authentication.
+ *      JwtModule - it is used for token creation for authentication.
+ */
 @Module({
-  imports: [
-    UsersModule,
-    JwtModule.register({
-      global: true,
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '3600s' },
-    }),
-  ],
-  providers: [
-    AuthService,
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
-  ],
-  controllers: [AuthController],
-  exports: [AuthService],
+    imports: [
+        ConfigModule,
+        TypeOrmModule.forFeature([UserRepository]),
+        PassportModule.register({ defaultStrategy: "jwt" }),
+        JwtModule.registerAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService) => {
+                return {
+                    secret: configService.get("JWT_SECRET"),
+                    signOptions: {
+                        expiresIn: configService.get("EXPIRES_IN"),
+                    },
+                };
+            },
+        }),
+        MailModule,
+    ],
+    controllers: [AuthController],
+    providers: [AuthService, LocalStrategy, JwtStrategy, GoogleStrategy],
+    exports: [AuthService, PassportModule, JwtStrategy],
 })
 export class AuthModule {}
