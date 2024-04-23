@@ -7,7 +7,7 @@ export class MailService {
     /**
      * Organization Name
      */
-    private _name: string = "YOUR ORG";
+    private _name: string = "Schoolyfied";
 
     /**
      * getter function for Organization Name
@@ -27,7 +27,7 @@ export class MailService {
     /**
      * email address for sending mails
      */
-    private _from: string = "info@your-org.io";
+    private _from: string = "official@schoolyfied.in";
 
     /**
      * getter function for from - email address
@@ -83,7 +83,7 @@ export class MailService {
      */
     async sendUserActivationToken(user: User, url: string) {
         // await this.mailService.sendMail({
-        this.mailService.sendMail({
+        await this.mailService.sendMail({
             from: { name: this.name, address: this.from },
             to: user.email,
             subject: "",
