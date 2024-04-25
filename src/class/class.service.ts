@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Class } from './entities/class.entity';
+import { ClassCategoryService } from 'src/class-category/class-category.service';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
 
@@ -22,6 +23,7 @@ export class ClassService {
   constructor(
     @InjectRepository(Class)
     private readonly classRepository: Repository<Class>,
+    private readonly classCategoryService: ClassCategoryService,
   ) {}
 
   /**
@@ -30,7 +32,7 @@ export class ClassService {
    * @returns created class information
    */
   async createClass(createClassDto: CreateClassDto) {
-    const { name } = createClassDto;
+    const { name, category_id } = createClassDto;
 
     this.logger.log(`Checking if class exists`);
     const classCategory = await this.classRepository.findOne({
@@ -39,9 +41,13 @@ export class ClassService {
 
     if (classCategory) throw new ConflictException('Class already exists');
 
+    //get class category by id
+    const category =
+      await this.classCategoryService.getClassCategoryById(category_id);
     this.logger.log(`Create New Class`);
     let newClass = new Class();
     newClass.name = name.toLowerCase();
+    newClass.classCategory = category;
     try {
       newClass = await this.classRepository.save(newClass);
       this.logger.log(`Class Created Successfully`);

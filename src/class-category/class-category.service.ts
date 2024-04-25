@@ -63,7 +63,11 @@ export class ClassCategoryService {
   async getAllClassCategory() {
     try {
       this.logger.log(`Get all class category`);
-      const data = await this.classCategoryRepository.find();
+      const data = await this.classCategoryRepository.find({
+        relations: {
+          classes: true,
+        },
+      });
       return data;
     } catch (error) {
       this.logger.error('Error while getting class category');
@@ -80,9 +84,13 @@ export class ClassCategoryService {
    */
   async getClassCategoryById(id: string) {
     this.logger.log(`Getting class category by id: ${id}`);
+    console.log('id', id);
     try {
       const data = await this.classCategoryRepository.findOne({
         where: { id },
+        relations: {
+          classes: true,
+        },
       });
       if (!data) throw new NotFoundException('Class category Not Found');
       return data;

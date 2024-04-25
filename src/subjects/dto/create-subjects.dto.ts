@@ -8,21 +8,13 @@ import {
   IsString,
 } from 'class-validator';
 
-export class CreateClassDto {
+export class CreateSubjectsDto {
   /**
    * full name  of class
    *
    */
-  @ApiProperty({ required: true, description: 'name for class' })
+  @ApiProperty({ required: true, description: 'name for subject' })
   @IsNotEmpty()
   @IsString()
   name: string;
-
-  /**
-   * category id
-   */
-  @ApiProperty({ required: true, description: 'category of class' })
-  @IsNotEmpty()
-  @IsString()
-  category_id: string;
 }

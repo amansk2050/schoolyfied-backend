@@ -76,8 +76,10 @@ export class BoardsService {
    */
   async getBoardById(id: string): Promise<Boards> {
     this.logger.log(`Getting board by id: ${id}`);
+    console.log('Board :: ', id);
     try {
       const board = await this.boardsRepository.findOne({ where: { id } });
+      console.log('Board :: ', board);
       if (!board) throw new NotFoundException('Board Not Found');
       return board;
     } catch (error) {

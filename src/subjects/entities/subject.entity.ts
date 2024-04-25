@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { Class } from 'src/class/entities/class.entity';
 import {
   Column,
   CreateDateColumn,
@@ -11,10 +10,10 @@ import {
 } from 'typeorm';
 
 /**
- * It describes the schema for class category , ex: pre-primary, primary etc table in database.
+ * It describes the schema for subject category , ex: math, science etc table in database.
  */
-@Entity()
-export class ClassCategory {
+@Entity('subject')
+export class Subject {
   /**
    * auto-generated unique uuid primary key for the table.
    */
@@ -23,40 +22,30 @@ export class ClassCategory {
   id: string;
 
   /**
-   * full name of class-category
+   * full name of subject
    */
   @Column({ unique: true, default: null })
   @ApiProperty()
   name: string;
 
   /**
-   * abbreviation of class-category
-   */
-  @Column({ length: 50 })
-  @ApiProperty()
-  abbr: string;
-
-  /**
-   * represents activation state of class category.
+   * represents activation state of subject.
    */
   @Column({ type: 'boolean', default: true })
   @ApiProperty({ default: true })
   active: boolean;
 
   /**
-   * timestamp for date of class category creation.
+   * timestamp for date of subject  creation.
    */
   @CreateDateColumn()
   @ApiProperty()
   createdAt: Date;
 
   /**
-   * timestamp for date of class category information updation.
+   * timestamp for date of subject information updation.
    */
   @UpdateDateColumn()
   @ApiProperty()
   updatedAt: Date;
-
-  @OneToMany(() => Class, (classes) => classes.classCategory)
-  classes: Class[];
 }

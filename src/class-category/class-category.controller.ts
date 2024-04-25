@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -93,7 +94,7 @@ export class ClassCategoryController {
     type: ClassCategory,
   })
   @ApiBadRequestResponse({ description: 'Invalid data' })
-  async getClassCategoryById(@Param('id') id: string) {
+  async getClassCategoryById(@Query('id') id: string) {
     const data = await this.classCategoryService.getClassCategoryById(id);
     return {
       data,

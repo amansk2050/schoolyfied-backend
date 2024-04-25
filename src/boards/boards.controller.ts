@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -81,7 +82,7 @@ export class BoardsController {
   })
   @ApiOkResponse({ description: 'Get a board by id', type: Boards })
   @ApiBadRequestResponse({ description: 'Invalid id' })
-  async getBoardById(@Param('id') id: string) {
+  async getBoardById(@Query('id') id: string) {
     const data = await this.boardsService.getBoardById(id);
     return {
       data,

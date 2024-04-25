@@ -16,6 +16,8 @@ import { UserModule } from './user/user.module';
 import { BoardsModule } from './boards/boards.module';
 import { ClassCategoryModule } from './class-category/class-category.module';
 import { ClassModule } from './class/class.module';
+import { SubjectsModule } from './subjects/subjects.module';
+import { ClassCategoryMapModule } from './class-category-map/class-category-map.module';
 
 /**
  * It is the root module for the application in we import all feature modules and configure modules and packages that are common in feature modules. Here we also configure the middlewares.
@@ -51,6 +53,8 @@ import { ClassModule } from './class/class.module';
     BoardsModule,
     ClassCategoryModule,
     ClassModule,
+    SubjectsModule,
+    ClassCategoryMapModule,
   ],
   controllers: [AppController],
   providers: [

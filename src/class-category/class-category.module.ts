@@ -7,5 +7,6 @@ import { ClassCategory } from './entities/class-category.entity';
   imports: [TypeOrmModule.forFeature([ClassCategory])],
   controllers: [ClassCategoryController],
   providers: [ClassCategoryService],
+  exports:[ClassCategoryService]
 })
 export class ClassCategoryModule {}

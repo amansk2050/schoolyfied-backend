@@ -28,4 +28,5 @@ export class CreateClassCategoryDto {
   @IsNotEmpty()
   @IsString()
   abbr: string;
+
 }

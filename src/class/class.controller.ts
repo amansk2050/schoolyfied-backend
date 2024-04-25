@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -89,7 +90,7 @@ export class ClassController {
   })
   @ApiBadRequestResponse({ description: 'Invalid data' })
   async updateClass(
-    @Param('id') id: string,
+    @Query('id') id: string,
     @Body() updateClassDto: UpdateClassDto,
   ) {
     const data = await this.classService.updateClass(id, updateClassDto);
@@ -115,7 +116,7 @@ export class ClassController {
     type: Class,
   })
   @ApiBadRequestResponse({ description: 'Invalid data' })
-  async getClassById(@Param('id') id: string) {
+  async getClassById(@Query('id') id: string) {
     const data = await this.classService.getClassById(id);
     return {
       data,

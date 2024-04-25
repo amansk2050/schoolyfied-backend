@@ -1,9 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
+import { ClassCategory } from 'src/class-category/entities/class-category.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -28,8 +30,6 @@ export class Class {
   @ApiProperty()
   name: string;
 
-
-
   /**
    * represents activation state of class.
    */
@@ -50,4 +50,7 @@ export class Class {
   @UpdateDateColumn()
   @ApiProperty()
   updatedAt: Date;
+
+  @ManyToOne(() => ClassCategory, (classCategory) => classCategory.classes)
+  classCategory: ClassCategory;
 }
