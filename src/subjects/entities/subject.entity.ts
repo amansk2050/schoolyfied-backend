@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
+import { Syllabus } from 'src/syllabus/entities/syllabus.entity';
 import {
   Column,
   CreateDateColumn,
@@ -48,4 +49,7 @@ export class Subject {
   @UpdateDateColumn()
   @ApiProperty()
   updatedAt: Date;
+
+  @OneToMany(() => Syllabus, (syllabus) => syllabus.subject)
+  syllabus: Syllabus;
 }

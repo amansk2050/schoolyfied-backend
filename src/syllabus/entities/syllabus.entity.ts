@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { ClassCategory } from 'src/class-category/entities/class-category.entity';
-import { Syllabus } from 'src/syllabus/entities/syllabus.entity';
+import { Boards } from 'src/boards/entities/boards.entity';
+import { Class } from 'src/class/entities/class.entity';
+import { Subject } from 'src/subjects/entities/subject.entity';
+
 import {
   Column,
   CreateDateColumn,
@@ -15,8 +17,8 @@ import {
 /**
  * It describes the schema for class category , ex: pre-primary, primary etc table in database.
  */
-@Entity('class')
-export class Class {
+@Entity()
+export class Syllabus {
   /**
    * auto-generated unique uuid primary key for the table.
    */
@@ -25,36 +27,39 @@ export class Class {
   id: string;
 
   /**
-   * full name of class
+   * syllabus json feild
    */
-  @Column({ unique: true, default: null })
+  @Column({ type: 'jsonb', nullable: true })
   @ApiProperty()
-  name: string;
+  syllabus: JSON;
 
   /**
-   * represents activation state of class.
+   * represents activation state of class category.
    */
   @Column({ type: 'boolean', default: true })
   @ApiProperty({ default: true })
   active: boolean;
 
   /**
-   * timestamp for date of class  creation.
+   * timestamp for date of class category creation.
    */
   @CreateDateColumn()
   @ApiProperty()
   createdAt: Date;
 
   /**
-   * timestamp for date of class information updation.
+   * timestamp for date of class category information updation.
    */
   @UpdateDateColumn()
   @ApiProperty()
   updatedAt: Date;
 
-  @ManyToOne(() => ClassCategory, (classCategory) => classCategory.classes)
-  classCategory: ClassCategory;
+  @ManyToOne(() => Class, (classes) => classes.syllabus)
+  class: Class;
 
-  @OneToMany(() => Syllabus, (syllabus) => syllabus.class)
-  syllabus: Syllabus;
+  @ManyToOne(() => Subject, (subject) => subject.syllabus)
+  subject: Subject;
+
+  @ManyToOne(() => Boards, (board) => board.syllabus)
+  board: Boards;
 }

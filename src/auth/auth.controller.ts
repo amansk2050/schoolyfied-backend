@@ -11,19 +11,19 @@ import {
   Req,
   InternalServerErrorException,
   ClassSerializerInterceptor,
-} from "@nestjs/common";
-import { AuthService } from "./auth.service";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { User } from "../user/entities/user.entity";
-import { TransformInterceptor } from "../core/transform.interceptor";
-import { LoginUserDto } from "./dto/login-user.dto";
-import { Request } from "express";
-import { LocalAuthGuard } from "./guards/local-auth.guard";
-import { JwtAuthGuard } from "./guards/jwt-auth.guard";
-import { ForgotPasswordDto } from "./dto/forgot-password.dto";
-import { ResetPasswordDto } from "./dto/reset-password.dto";
-import { GetUser } from "./decorators/get-user.decorator";
-import { UpdateMyPasswordDto } from "./dto/update-password.dto";
+} from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { User } from '../user/entities/user.entity';
+import { TransformInterceptor } from '../core/transform.interceptor';
+import { LoginUserDto } from './dto/login-user.dto';
+import { Request } from 'express';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { GetUser } from './decorators/get-user.decorator';
+import { UpdateMyPasswordDto } from './dto/update-password.dto';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -38,19 +38,19 @@ import {
   ApiResponse,
   ApiTags,
   ApiUnauthorizedResponse,
-} from "@nestjs/swagger";
-import { UserResponseDto } from "./dto-response/user-response.dto";
-import { MessageResponseDto } from "./dto-response/message-response.dto";
-import { LogoutResponseDto } from "./dto-response/logout-response.dto";
-import { GoogleAuthGuard } from "./guards/google-auth.guard";
+} from '@nestjs/swagger';
+import { UserResponseDto } from './dto-response/user-response.dto';
+import { MessageResponseDto } from './dto-response/message-response.dto';
+import { LogoutResponseDto } from './dto-response/logout-response.dto';
+import { GoogleAuthGuard } from './guards/google-auth.guard';
 
 /**
-* AuthController is responsible for handling incoming requests specific to Authentication related APIs and returning responses to the client.
-* it creates a route - "/auth"
-*/
-@Controller("auth")
+ * AuthController is responsible for handling incoming requests specific to Authentication related APIs and returning responses to the client.
+ * it creates a route - "/auth"
+ */
+@Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
-@ApiTags("auth")
+@ApiTags('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -62,23 +62,26 @@ export class AuthController {
    * @returns newly created user object, token for authentication and response status.
    * @throws ConflictException in case of email already exists in the database.
    */
-  @Post("signup")
+  @Post('signup')
   @ApiOperation({
-      description: "Api to register new users.",
-      summary: "Api to register new users. It taked (fullname, email and password) as input",
+    description: 'Api to register new users.',
+    summary:
+      'Api to register new users. It taked (fullname, email and password) as input',
   })
   @ApiCreatedResponse({
-      description: "The user is successfully created",
-      type: UserResponseDto,
+    description: 'The user is successfully created',
+    type: UserResponseDto,
   })
-  @ApiConflictResponse({ description: "In case of email already exists in the database" })
+  @ApiConflictResponse({
+    description: 'In case of email already exists in the database',
+  })
   async signup(@Body() createUserDto: CreateUserDto, @Req() req: Request) {
-      const { user, token } = await this.authService.signup(createUserDto, req);
-      return {
-          status: "success",
-          user,
-          token,
-      };
+    const { user, token } = await this.authService.signup(createUserDto, req);
+    return {
+      status: 'success',
+      user,
+      token,
+    };
   }
 
   /**
@@ -88,22 +91,27 @@ export class AuthController {
    * @returns if successfully activated, returns response status and message.
    * @throws UnauthorizedException with message in case user is not logged in.
    */
-  @Patch("activate/:token")
+  @Patch('activate/:token')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-      description: "Api to activate new user account and sends the activation mail to user",
-      summary: "Api to activate new user account and sends the activation mail to user",
+    description:
+      'Api to activate new user account and sends the activation mail to user',
+    summary:
+      'Api to activate new user account and sends the activation mail to user',
   })
   @ApiOkResponse({
-      description: "Activates the account and sends the activation mail to user",
-      type: MessageResponseDto,
+    description: 'Activates the account and sends the activation mail to user',
+    type: MessageResponseDto,
   })
-  @ApiUnauthorizedResponse({ description: "In case user is not logged in for activation" })
+  @ApiUnauthorizedResponse({
+    description: 'In case user is not logged in for activation',
+  })
   @ApiBearerAuth()
-  async activateAccount(@Param("token") token: string) {
-      const isActivated = await this.authService.activateAccount(token);
+  async activateAccount(@Param('token') token: string) {
+    const isActivated = await this.authService.activateAccount(token);
 
-      if (isActivated) return { status: "success", message: "Account Activated successfully" };
+    if (isActivated)
+      return { status: 'success', message: 'Account Activated successfully' };
   }
 
   /**
@@ -113,39 +121,45 @@ export class AuthController {
    * @returns newly logged in user object, token for authentication and response status.
    * @throws UnauthorizedException with message in case user is not logged in.
    */
-  @Post("login")
+  @Post('login')
   @UseGuards(LocalAuthGuard)
   @UseInterceptors(TransformInterceptor)
   @ApiOperation({
-      description: "Api to login already registered user.",
-      summary: "Api to login already registered user.",
+    description: 'Api to login already registered user.',
+    summary: 'Api to login already registered user.',
   })
-  @ApiCreatedResponse({ description: "Login successful", type: UserResponseDto })
-  @ApiUnauthorizedResponse({ description: "Invalid credentials" })
+  @ApiCreatedResponse({
+    description: 'Login successful',
+    type: UserResponseDto,
+  })
+  @ApiUnauthorizedResponse({ description: 'Invalid credentials' })
   @ApiBody({ required: true, type: LoginUserDto })
   async loginPassportLocal(@Req() req: Request) {
-      const user = req.user;
+    const user = req.user;
+    console.log('user :: ', user);
 
-      const token = await this.authService.signToken(user);
+    const token = await this.authService.signToken(user);
 
-      return { status: "success", user, token };
-
+    return { status: 'success', user, token };
   }
 
   /**
    * Get API - "/google" - used for login through google account. It redirects to Google OAuth Content Screen.
    * @param req HTTP request object.
    */
-  @Get("google")
+  @Get('google')
   @UseGuards(GoogleAuthGuard)
   @ApiOperation({
-      description: "Api to login user through Google account.",
-      summary: "Api to login user through Google account.",
+    description: 'Api to login user through Google account.',
+    summary: 'Api to login user through Google account.',
   })
-  @ApiResponse({ status: 302, description: "Redirect to Google OAuth Content Screen" })
-  @ApiOAuth2(["email", "profile"])
+  @ApiResponse({
+    status: 302,
+    description: 'Redirect to Google OAuth Content Screen',
+  })
+  @ApiOAuth2(['email', 'profile'])
   async loginGoogle(@Req() req: Request) {
-      // NOTE: For UI:${req.protocol}://${req.get("host")}/auth/google_oauth2
+    // NOTE: For UI:${req.protocol}://${req.get("host")}/auth/google_oauth2
   }
 
   /**
@@ -155,23 +169,23 @@ export class AuthController {
    * @throws ConflictException if the user with that email already exists.
    * @throws UnauthorizedException if credentials are invalid.
    */
-  @Get("google/callback")
+  @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
   @ApiOkResponse({
-      description: "Created or found Existing user and Login successful",
-      type: UserResponseDto,
+    description: 'Created or found Existing user and Login successful',
+    type: UserResponseDto,
   })
-  @ApiUnauthorizedResponse({ description: "Invalid credentials" })
-  @ApiConflictResponse({ description: "User Already Exists" })
-  @ApiOAuth2(["email", "profile"])
+  @ApiUnauthorizedResponse({ description: 'Invalid credentials' })
+  @ApiConflictResponse({ description: 'User Already Exists' })
+  @ApiOAuth2(['email', 'profile'])
   async loginGoogleRedirect(@Req() req: Request) {
-      const { user, token } = await this.authService.loginGoogle(req);
+    const { user, token } = await this.authService.loginGoogle(req);
 
-      return {
-          status: "success",
-          user,
-          token,
-      };
+    return {
+      status: 'success',
+      user,
+      token,
+    };
   }
 
   /**
@@ -180,17 +194,17 @@ export class AuthController {
    * @returns null for token and response status.
    * @throws UnauthorizedException with message in case user is not logged in.
    */
-  @Get("logout")
+  @Get('logout')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-      description: "Api to logout logged in user.",
-      summary: "Api to logout logged in user.",
+    description: 'Api to logout logged in user.',
+    summary: 'Api to logout logged in user.',
   })
-  @ApiOkResponse({ description: "Logout Successful", type: LogoutResponseDto })
-  @ApiUnauthorizedResponse({ description: "If User is not logged in" })
+  @ApiOkResponse({ description: 'Logout Successful', type: LogoutResponseDto })
+  @ApiUnauthorizedResponse({ description: 'If User is not logged in' })
   @ApiBearerAuth()
   async logout() {
-      return { status: "success", token: null };
+    return { status: 'success', token: null };
   }
 
   /**
@@ -198,27 +212,33 @@ export class AuthController {
    * @returns response status and response message "Password reset email sent successfully".
    * @throws NotFoundException if the user with given email is not found.
    */
-  @Post("forgot-password")
+  @Post('forgot-password')
   @ApiCreatedResponse({
-      description: "Create password reset token and send it to user email",
-      type: MessageResponseDto,
+    description: 'Create password reset token and send it to user email',
+    type: MessageResponseDto,
   })
   @ApiOperation({
-      description:
-          "Api to reset the password in case the user forgets the password. it sends a mail with password reset URL to user's email.",
-      summary:
-          "Api to reset the password in case the user forgets the password. it sends a mail with password reset URL to user's email.",
+    description:
+      "Api to reset the password in case the user forgets the password. it sends a mail with password reset URL to user's email.",
+    summary:
+      "Api to reset the password in case the user forgets the password. it sends a mail with password reset URL to user's email.",
   })
-  @ApiNotFoundResponse({ description: "User is not found" })
-  async forgotPassword(@Body() forgotPassword: ForgotPasswordDto, @Req() req: Request) {
-      const status = await this.authService.forgotPassword(forgotPassword?.email, req);
+  @ApiNotFoundResponse({ description: 'User is not found' })
+  async forgotPassword(
+    @Body() forgotPassword: ForgotPasswordDto,
+    @Req() req: Request,
+  ) {
+    const status = await this.authService.forgotPassword(
+      forgotPassword?.email,
+      req,
+    );
 
-      if (!status) throw new InternalServerErrorException("Error sending email!");
+    if (!status) throw new InternalServerErrorException('Error sending email!');
 
-      return {
-          status: "success",
-          message: "Password reset email sent successfully",
-      };
+    return {
+      status: 'success',
+      message: 'Password reset email sent successfully',
+    };
   }
 
   /**
@@ -227,17 +247,17 @@ export class AuthController {
    * @returns response status and response message.
    * @throws BadRequestException if the user with that email already exists.
    */
-  @Get("verify/:token")
-  @ApiOkResponse({ description: "User Password Reset token verification" })
+  @Get('verify/:token')
+  @ApiOkResponse({ description: 'User Password Reset token verification' })
   @ApiOperation({
-      description: "Api to verify reset password token.",
-      summary: "Api to verify reset password token.",
+    description: 'Api to verify reset password token.',
+    summary: 'Api to verify reset password token.',
   })
-  @ApiBadRequestResponse({ description: "In case of invalid or expired token" })
-  async verifyToken(@Param("token") token: string) {
-      const message = await this.authService.verifyToken(token);
+  @ApiBadRequestResponse({ description: 'In case of invalid or expired token' })
+  async verifyToken(@Param('token') token: string) {
+    const message = await this.authService.verifyToken(token);
 
-      return { status: "success", message };
+    return { status: 'success', message };
   }
 
   /**
@@ -248,20 +268,28 @@ export class AuthController {
    * @throws BadRequestException in case of invalid or expired token.
    * @throws NotAcceptableException if password and passwordConfirm does not match.
    */
-  @Patch("reset-password/:token")
+  @Patch('reset-password/:token')
   @ApiOkResponse({
-      description: "User Password Reset was successful",
-      type: UserResponseDto,
+    description: 'User Password Reset was successful',
+    type: UserResponseDto,
   })
   @ApiOperation({
-      description: "Api to reset users password.",
-      summary: "Api to reset users password.",
+    description: 'Api to reset users password.',
+    summary: 'Api to reset users password.',
   })
-  @ApiNotAcceptableResponse({ description: "If password and passwordConfirm does not match" })
-  @ApiBadRequestResponse({ description: "In case of invalid or expired token" })
-  async resetPassword(@Param("token") token: string, @Body() resetPassword: ResetPasswordDto) {
-      const { updatedUser, newToken } = await this.authService.resetPassword(token, resetPassword);
-      return { status: "success", user: updatedUser, token: newToken };
+  @ApiNotAcceptableResponse({
+    description: 'If password and passwordConfirm does not match',
+  })
+  @ApiBadRequestResponse({ description: 'In case of invalid or expired token' })
+  async resetPassword(
+    @Param('token') token: string,
+    @Body() resetPassword: ResetPasswordDto,
+  ) {
+    const { updatedUser, newToken } = await this.authService.resetPassword(
+      token,
+      resetPassword,
+    );
+    return { status: 'success', user: updatedUser, token: newToken };
   }
 
   /**
@@ -273,28 +301,33 @@ export class AuthController {
    * @throws BadRequestException if given new password and user password are same or if given new password and passwordConfirm are different.
    * @throws UnauthorizedException if User is not logged in OR If input password and user password does not match.
    */
-  @Patch("update-my-password")
+  @Patch('update-my-password')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-      description: "Api to change password of current logged in user.",
-      summary: "Api to change password of current logged in user.",
+    description: 'Api to change password of current logged in user.',
+    summary: 'Api to change password of current logged in user.',
   })
-  @ApiOkResponse({ description: "Password Updated Successfully", type: UserResponseDto })
+  @ApiOkResponse({
+    description: 'Password Updated Successfully',
+    type: UserResponseDto,
+  })
   @ApiUnauthorizedResponse({
-      description: "If User is not logged in OR If input password and user password does not match",
+    description:
+      'If User is not logged in OR If input password and user password does not match',
   })
   @ApiBadRequestResponse({
-      description:
-          "If given new password and user password are same OR if given new password and passwordConfirm are different",
+    description:
+      'If given new password and user password are same OR if given new password and passwordConfirm are different',
   })
   @ApiBearerAuth()
-  async updateMyPassword(@Body() updateMyPassword: UpdateMyPasswordDto, @GetUser() user: User) {
-      const { user: updatedUser, token: newToken } = await this.authService.updateMyPassword(
-          updateMyPassword,
-          user,
-      );
+  async updateMyPassword(
+    @Body() updateMyPassword: UpdateMyPasswordDto,
+    @GetUser() user: User,
+  ) {
+    const { user: updatedUser, token: newToken } =
+      await this.authService.updateMyPassword(updateMyPassword, user);
 
-      return { status: "success", user: updatedUser, token: newToken };
+    return { status: 'success', user: updatedUser, token: newToken };
   }
 
   /**
@@ -305,22 +338,25 @@ export class AuthController {
    * @throws BadRequestException if User does not exist.
    * @throws UnauthorizedException if User is not logged in.
    */
-  @Delete("delete-me")
+  @Delete('delete-me')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-      description: "Api to delete logged in user's account",
-      summary: "Api to delete logged in user's account.",
+    description: "Api to delete logged in user's account",
+    summary: "Api to delete logged in user's account.",
   })
-  @ApiOkResponse({ description: "User deletion successful", type: MessageResponseDto })
-  @ApiBadRequestResponse({ description: "If User does not exist" })
-  @ApiUnauthorizedResponse({ description: "If User is not logged in" })
+  @ApiOkResponse({
+    description: 'User deletion successful',
+    type: MessageResponseDto,
+  })
+  @ApiBadRequestResponse({ description: 'If User does not exist' })
+  @ApiUnauthorizedResponse({ description: 'If User is not logged in' })
   @ApiBearerAuth()
   async deleteMyAccount(@GetUser() user: User) {
-      const isDeleted: boolean = await this.authService.deleteMyAccount(user);
+    const isDeleted: boolean = await this.authService.deleteMyAccount(user);
 
-      if (isDeleted) {
-          return { status: "success", message: "User Deleted Successfully" };
-      }
+    if (isDeleted) {
+      return { status: 'success', message: 'User Deleted Successfully' };
+    }
   }
 
   /**
@@ -330,17 +366,22 @@ export class AuthController {
    * @param req HTTP request object.
    * @returns response message "Activation mail sent successfully!" and status.
    */
-  @Get("send-activation-mail")
+  @Get('send-activation-mail')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-      description: "Api to send account activation mail.",
-      summary: "Api to send account activation mail.",
+    description: 'Api to send account activation mail.',
+    summary: 'Api to send account activation mail.',
   })
-  @ApiOkResponse({ description: "Send Account activation email", type: MessageResponseDto })
+  @ApiOkResponse({
+    description: 'Send Account activation email',
+    type: MessageResponseDto,
+  })
   @ApiBearerAuth()
   async sendAccountActivationToken(@GetUser() user: User, @Req() req: Request) {
-      const status = await this.authService.sendAccountActivationMail(user, req);
+    const status = await this.authService.sendAccountActivationMail(user, req);
 
-      return status === "success" ? { status, message: "Activation mail sent successfully!" } : "";
+    return status === 'success'
+      ? { status, message: 'Activation mail sent successfully!' }
+      : '';
   }
 }

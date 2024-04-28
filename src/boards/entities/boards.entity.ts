@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
+import { School } from 'src/school/entities/school.entity';
+import { Syllabus } from 'src/syllabus/entities/syllabus.entity';
 import {
   Column,
   CreateDateColumn,
@@ -55,4 +57,12 @@ export class Boards {
   @UpdateDateColumn()
   @ApiProperty()
   updatedAt: Date;
+
+  @OneToMany(() => Syllabus, (syllabus) => syllabus.board)
+  syllabus: Syllabus;
+
+  @OneToMany(() => School, (school) => school.board)
+  school: School;
+
+  
 }

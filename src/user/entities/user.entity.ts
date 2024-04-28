@@ -9,11 +9,13 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { UserRoles } from '../enums/role.enum';
+import { School } from 'src/school/entities/school.entity';
+import { SchoolClass } from 'src/school/entities/school-class.entity';
 
 /**
  * It describes the schema for user table in database.
  */
-@Entity()
+@Entity('user_details')
 export class User {
   /**
    * auto-generated unique uuid primary key for the table.
@@ -119,4 +121,10 @@ export class User {
   @UpdateDateColumn()
   @ApiProperty()
   updatedAt: Date;
+
+  @OneToMany(() => School, (school) => school.createdBy)
+  school: School;
+
+  @OneToMany(() => SchoolClass, (school) => school.createdBy)
+  schoolClass: SchoolClass;
 }

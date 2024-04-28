@@ -12,5 +12,6 @@ import { ClassCategoryModule } from 'src/class-category/class-category.module';
   ],
   providers: [ClassService],
   controllers: [ClassController],
+  exports: [ClassService],
 })
 export class ClassModule {}

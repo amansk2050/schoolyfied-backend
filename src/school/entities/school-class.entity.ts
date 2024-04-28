@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
+import { Boards } from 'src/boards/entities/boards.entity';
 import { ClassCategory } from 'src/class-category/entities/class-category.entity';
 import { Syllabus } from 'src/syllabus/entities/syllabus.entity';
+import { User } from 'src/user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -11,12 +13,13 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { School } from './school.entity';
 
 /**
- * It describes the schema for class category , ex: pre-primary, primary etc table in database.
+ * It describes the schema for school_class table in database.
  */
-@Entity('class')
-export class Class {
+@Entity('school_class')
+export class SchoolClass {
   /**
    * auto-generated unique uuid primary key for the table.
    */
@@ -25,11 +28,22 @@ export class Class {
   id: string;
 
   /**
-   * full name of class
+   * name of the class
    */
   @Column({ unique: true, default: null })
   @ApiProperty()
   name: string;
+
+  /**
+   * class category id
+   */
+  @ManyToOne(() => ClassCategory, (classCategory) => classCategory.schoolClass)
+  @ApiProperty()
+  category: ClassCategory;
+
+  @ManyToOne(() => School, (school) => school.schoolClass)
+  @ApiProperty()
+  school: School;
 
   /**
    * represents activation state of class.
@@ -39,8 +53,8 @@ export class Class {
   active: boolean;
 
   /**
-   * timestamp for date of class  creation.
-   */
+   * timestamp for date of class creation.
+   * */
   @CreateDateColumn()
   @ApiProperty()
   createdAt: Date;
@@ -52,9 +66,13 @@ export class Class {
   @ApiProperty()
   updatedAt: Date;
 
-  @ManyToOne(() => ClassCategory, (classCategory) => classCategory.classes)
-  classCategory: ClassCategory;
+  /**
+   * is section
+   */
+  @Column({ type: 'boolean', default: false })
+  @ApiProperty({ default: false })
+  is_section: boolean;
 
-  @OneToMany(() => Syllabus, (syllabus) => syllabus.class)
-  syllabus: Syllabus;
+  @ManyToOne(() => User, (User) => User.schoolClass)
+  createdBy: User;
 }

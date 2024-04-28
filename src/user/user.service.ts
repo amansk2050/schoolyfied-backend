@@ -77,7 +77,7 @@ export class UserService {
   async createUser(
     createAuthDto: CreateUserDto,
   ): Promise<{ user: User; activateToken: string }> {
-    let { password, fullName } = createAuthDto;
+    let { password, fullName, roles } = createAuthDto;
 
     password = await argon2hash(password); // NOTE: Hash the password
 
@@ -92,6 +92,7 @@ export class UserService {
       user.lastName = names.join(' ');
       user.email = createAuthDto.email;
       user.password = password;
+      user.roles = roles;
 
       user.activeToken = crypto
         .createHash('sha256')

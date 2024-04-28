@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { Class } from 'src/class/entities/class.entity';
+import { SchoolClass } from 'src/school/entities/school-class.entity';
+import { School } from 'src/school/entities/school.entity';
 import {
   Column,
   CreateDateColumn,
@@ -59,4 +61,8 @@ export class ClassCategory {
 
   @OneToMany(() => Class, (classes) => classes.classCategory)
   classes: Class[];
+
+  @OneToMany(() => SchoolClass, (schoolClass) => schoolClass.category)
+  schoolClass: SchoolClass;
+
 }
