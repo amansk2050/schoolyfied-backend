@@ -4,6 +4,7 @@ import { Boards } from 'src/boards/entities/boards.entity';
 import { ClassCategory } from 'src/class-category/entities/class-category.entity';
 import { Syllabus } from 'src/syllabus/entities/syllabus.entity';
 import { User } from 'src/user/entities/user.entity';
+import { ClassSection } from 'src/class-section/entities/class-section.entity';
 import {
   Column,
   CreateDateColumn,
@@ -75,4 +76,7 @@ export class SchoolClass {
 
   @ManyToOne(() => User, (User) => User.schoolClass)
   createdBy: User;
+
+  @OneToMany(() => ClassSection, (classSection) => classSection.school_class)
+  class_section: ClassSection;
 }

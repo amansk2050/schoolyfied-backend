@@ -166,4 +166,25 @@ export class UserService {
 
     return resetToken;
   }
+
+  /**
+   * it returns by user id.
+   * @param id user id
+   * @returns user information
+   * @throws NotFoundException if user not found
+   * @throws InternalServerErrorException if any error occurs
+   */
+  async getUserById(id: string) {
+    this.logger.log(`Get user by id`);
+    try {
+      const data = await this.userRepository.findOne({
+        where: { id },
+      });
+      if (!data) throw new NotFoundException('User not found');
+      return data;
+    } catch (error) {
+      this.logger.error('Error while getting user by id');
+      throw new InternalServerErrorException('Error while getting user by id');
+    }
+  }
 }

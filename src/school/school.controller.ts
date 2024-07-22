@@ -72,7 +72,7 @@ export class SchoolController {
    * @returns school information
    */
   @Get('/id')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     description: 'Get School by Id.',

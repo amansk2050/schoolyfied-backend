@@ -18,9 +18,10 @@ import { ClassModule } from 'src/class/class.module';
     UserModule,
     BoardsModule,
     ClassCategoryModule,
-    ClassModule
+    ClassModule,
   ],
   controllers: [SchoolController],
   providers: [SchoolService],
+  exports: [SchoolService],
 })
 export class SchoolModule {}

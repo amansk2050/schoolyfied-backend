@@ -131,7 +131,6 @@ export class SchoolService {
    * @returns school information
    * @throws NotFoundException if school not found
    * @throws InternalServerErrorException if any error occurs
-   * @throws ConflictException if school already exists
    */
   async getSchoolById(id: string) {
     this.logger.log(`Get school by id`);
@@ -150,6 +149,33 @@ export class SchoolService {
       this.logger.error('Error while getting school by id');
       throw new InternalServerErrorException(
         'Error while getting school by id',
+      );
+    }
+  }
+
+  /**
+   * it returns scholClass by id.
+   * @param id schoolClass id
+   * @returns schoolClass information
+   * @throws NotFoundException if schoolClass not found
+   * @throws InternalServerErrorException if any error occurs
+   */
+  async getSchoolClassById(id: string) {
+    this.logger.log(`Get schoolClass by id`);
+    try {
+      const data = await this.schoolClassRepository.findOne({
+        where: { id },
+        relations: {
+          school: true,
+          category: true,
+        },
+      });
+      if (!data) throw new NotFoundException('SchoolClass not found');
+      return data;
+    } catch (error) {
+      this.logger.error('Error while getting schoolClass by id');
+      throw new InternalServerErrorException(
+        'Error while getting schoolClass by id',
       );
     }
   }

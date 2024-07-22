@@ -12,6 +12,8 @@ import { UserRoles } from '../enums/role.enum';
 import { School } from 'src/school/entities/school.entity';
 import { SchoolClass } from 'src/school/entities/school-class.entity';
 
+import { ClassSection } from 'src/class-section/entities/class-section.entity';
+
 /**
  * It describes the schema for user table in database.
  */
@@ -127,4 +129,16 @@ export class User {
 
   @OneToMany(() => SchoolClass, (school) => school.createdBy)
   schoolClass: SchoolClass;
+
+  @OneToMany(() => ClassSection, (classSection) => classSection.created_by)
+  class_section: ClassSection;
+
+  @OneToMany(() => ClassSection, (classSection) => classSection.updated_by)
+  class_section_user: ClassSection;
+
+  @OneToMany(() => ClassSection, (classSection) => classSection.class_teacher)
+  class_teacher: ClassSection;
+
+  @OneToMany(() => ClassSection, (classSection) => classSection.class_monitor)
+  class_monitor: ClassSection;
 }
