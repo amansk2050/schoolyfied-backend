@@ -20,6 +20,7 @@ import { SubjectsModule } from './subjects/subjects.module';
 import { SyllabusModule } from './syllabus/syllabus.module';
 import { SchoolModule } from './school/school.module';
 import { ClassSectionModule } from './class-section/class-section.module';
+import { StudentModule } from './student/student.module';
 
 
 
@@ -61,6 +62,7 @@ import { ClassSectionModule } from './class-section/class-section.module';
     SyllabusModule,
     SchoolModule,
     ClassSectionModule,
+    StudentModule,
    
   ],
   controllers: [AppController],
