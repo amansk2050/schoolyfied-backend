@@ -64,5 +64,4 @@ export class ClassCategory {
 
   @OneToMany(() => SchoolClass, (schoolClass) => schoolClass.category)
   schoolClass: SchoolClass;
-
 }

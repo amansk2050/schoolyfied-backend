@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
 import { Boards } from 'src/boards/entities/boards.entity';
 import { Class } from 'src/class/entities/class.entity';
 import { Subject } from 'src/subjects/entities/subject.entity';
@@ -9,7 +8,6 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';

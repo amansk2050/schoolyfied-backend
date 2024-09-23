@@ -3,19 +3,13 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
-  Param,
-  Patch,
   Post,
   Query,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiTags,
-  ApiBearerAuth,
   ApiOkResponse,
-  ApiUnauthorizedResponse,
-  ApiForbiddenResponse,
   ApiOperation,
   ApiBadRequestResponse,
 } from '@nestjs/swagger';

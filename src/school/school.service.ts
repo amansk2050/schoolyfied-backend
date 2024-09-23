@@ -5,7 +5,7 @@ import {
   ConflictException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+
 import { CreateSchoolDto } from './dto/create-school.dto';
 import { School } from './entities/school.entity';
 import { SchoolClass } from './entities/school-class.entity';
@@ -35,7 +35,10 @@ export class SchoolService {
    * @param user user information of current logged in user.
    * @returns created school information
    */
-  async createSchool(createSchoolDto: CreateSchoolDto, user: User) {
+  async createSchool(
+    createSchoolDto: CreateSchoolDto,
+    user: User,
+  ): Promise<School> {
     const {
       name,
       address,
