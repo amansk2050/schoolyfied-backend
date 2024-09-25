@@ -1,9 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
 import { Boards } from 'src/boards/entities/boards.entity';
 import { ClassCategory } from 'src/class-category/entities/class-category.entity';
-import { Syllabus } from 'src/syllabus/entities/syllabus.entity';
 import { User } from 'src/user/entities/user.entity';
+import { Teacher } from 'src/teacher/entities/teacher.entity';
 import {
   Column,
   CreateDateColumn,
@@ -12,10 +11,12 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { SchoolClass } from './school-class.entity';
+import { Student } from 'src/student/entities/student.entity';
 
 /**
  * It describes the schema for school table in database.
@@ -107,16 +108,22 @@ export class School {
   @ApiProperty()
   updatedAt: Date;
 
-  @ManyToOne(() => Boards, (board) => board.school)
+  @ManyToOne(() => Boards, board => board.school)
   board: Boards;
 
-  @ManyToOne(() => User, (User) => User.school)
+  @ManyToOne(() => User, User => User.school)
   createdBy: User;
 
   @ManyToMany(() => ClassCategory)
   @JoinTable()
   classCategory: ClassCategory[];
 
-  @OneToMany(() => SchoolClass, (schoolClass) => schoolClass.school)
+  @OneToMany(() => SchoolClass, schoolClass => schoolClass.school)
   schoolClass: SchoolClass;
+
+  @OneToOne(() => Student, student => student.school)
+  student: Student;
+
+  @OneToOne(() => Teacher, teacher => teacher.school)
+  teacher: Teacher;
 }

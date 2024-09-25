@@ -3,8 +3,6 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
-  Param,
-  Patch,
   Post,
   Query,
   UseGuards,
@@ -22,7 +20,6 @@ import {
 import { SchoolService } from './school.service';
 import { CreateSchoolDto } from './dto/create-school.dto';
 import { School } from './entities/school.entity';
-import { SchoolClass } from './entities/school-class.entity';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { User } from 'src/user/entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';

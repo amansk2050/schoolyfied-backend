@@ -1,5 +1,5 @@
-import * as argon2 from "argon2";
-import * as crypto from "crypto";
+import * as argon2 from 'argon2';
+import * as crypto from 'crypto';
 
 /**
  * @function
@@ -9,16 +9,16 @@ import * as crypto from "crypto";
  * @author <a href="https://debiprasadmishra.net">Debi Prasad Mishra</a>
  */
 const argon2hash = async (password: string): Promise<string> => {
-    const hash = await argon2.hash(password, {
-        type: argon2.argon2id,
-        hashLength: 32,
-        parallelism: 4,
-        memoryCost: 65536,
-        timeCost: 10,
-        salt: crypto.randomBytes(16),
-    });
+  const hash = await argon2.hash(password, {
+    type: argon2.argon2id,
+    hashLength: 32,
+    parallelism: 4,
+    memoryCost: 65536,
+    timeCost: 10,
+    salt: crypto.randomBytes(16),
+  });
 
-    return hash;
+  return hash;
 };
 
 /**
@@ -29,8 +29,11 @@ const argon2hash = async (password: string): Promise<string> => {
  * @returns whether password verifies with argon2 hash
  * @author <a href="https://debiprasadmishra.net">Debi Prasad Mishra</a>
  */
-const argon2verify = async (hash: string, password: string): Promise<boolean> => {
-    return await argon2.verify(hash, password, { secret: argon2.argon2id });
+const argon2verify = async (
+  hash: string,
+  password: string,
+): Promise<boolean> => {
+  return await argon2.verify(hash, password, { secret: argon2.argon2id });
 };
 
 export { argon2hash, argon2verify };

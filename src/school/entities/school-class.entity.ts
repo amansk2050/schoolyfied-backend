@@ -1,8 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
-import { Boards } from 'src/boards/entities/boards.entity';
 import { ClassCategory } from 'src/class-category/entities/class-category.entity';
-import { Syllabus } from 'src/syllabus/entities/syllabus.entity';
 import { User } from 'src/user/entities/user.entity';
 import { ClassSection } from 'src/class-section/entities/class-section.entity';
 import {
@@ -11,10 +8,12 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { School } from './school.entity';
+import { Student } from 'src/student/entities/student.entity';
 
 /**
  * It describes the schema for school_class table in database.
@@ -79,4 +78,7 @@ export class SchoolClass {
 
   @OneToMany(() => ClassSection, (classSection) => classSection.school_class)
   class_section: ClassSection;
+
+  @OneToOne(() => Student, (student) => student.school_class)
+  student: Student;
 }

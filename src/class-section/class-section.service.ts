@@ -4,24 +4,24 @@ import {
   NotFoundException,
   ConflictException,
   InternalServerErrorException,
-} from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ClassSection } from './entities/class-section.entity';
-import { CreateClassSectionDto } from './dto/create-class-section.dto';
-import { SchoolService } from 'src/school/school.service';
-import { UserService } from 'src/user/user.service';
-import { User } from 'src/user/entities/user.entity';
+} from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { Repository } from "typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { ClassSection } from "./entities/class-section.entity";
+import { CreateClassSectionDto } from "./dto/create-class-section.dto";
+import { SchoolService } from "src/school/school.service";
+import { UserService } from "src/user/user.service";
+import { User } from "src/user/entities/user.entity";
 @Injectable()
 export class ClassSectionService {
-  private readonly logger = new Logger('CLASS_SECTION');
+  private readonly logger = new Logger("CLASS_SECTION");
 
   constructor(
     @InjectRepository(ClassSection)
     private readonly classSectionRepository: Repository<ClassSection>,
     private readonly schoolClassService: SchoolService,
-    private readonly userService: UserService,
+    private readonly userService: UserService
   ) {}
 
   /**
@@ -33,7 +33,7 @@ export class ClassSectionService {
    */
   async createClassSection(
     createClassSectionDto: CreateClassSectionDto,
-    user: User,
+    user: User
   ) {
     const {
       section_name,
@@ -49,7 +49,7 @@ export class ClassSectionService {
     });
 
     if (classSection)
-      throw new ConflictException('Class section already exists');
+      throw new ConflictException("Class section already exists");
 
     let schoolClass =
       await this.schoolClassService.getSchoolClassById(school_class);
@@ -70,7 +70,7 @@ export class ClassSectionService {
       return newClassSection;
     } catch (error) {
       this.logger.error(`Failed to create class section`, error.stack);
-      throw new InternalServerErrorException('Failed to create class section');
+      throw new InternalServerErrorException("Failed to create class section");
     }
   }
 
@@ -89,7 +89,7 @@ export class ClassSectionService {
     });
 
     if (!classSections || classSections.length === 0)
-      throw new NotFoundException('Class sections not found');
+      throw new NotFoundException("Class sections not found");
     return classSections;
   }
 
@@ -105,7 +105,7 @@ export class ClassSectionService {
       where: { id },
     });
 
-    if (!classSection) throw new NotFoundException('Class section not found');
+    if (!classSection) throw new NotFoundException("Class section not found");
     return classSection;
   }
 }

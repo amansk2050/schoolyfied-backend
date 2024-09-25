@@ -5,7 +5,6 @@ import {
   ConflictException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { MailService } from '../mail/mail.service';

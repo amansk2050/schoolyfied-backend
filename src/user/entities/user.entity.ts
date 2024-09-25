@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -11,8 +12,9 @@ import {
 import { UserRoles } from '../enums/role.enum';
 import { School } from 'src/school/entities/school.entity';
 import { SchoolClass } from 'src/school/entities/school-class.entity';
-
+import { Teacher } from 'src/teacher/entities/teacher.entity';
 import { ClassSection } from 'src/class-section/entities/class-section.entity';
+import { Student } from 'src/student/entities/student.entity';
 
 /**
  * It describes the schema for user table in database.
@@ -124,21 +126,27 @@ export class User {
   @ApiProperty()
   updatedAt: Date;
 
-  @OneToMany(() => School, (school) => school.createdBy)
+  @OneToMany(() => School, school => school.createdBy)
   school: School;
 
-  @OneToMany(() => SchoolClass, (school) => school.createdBy)
+  @OneToMany(() => SchoolClass, school => school.createdBy)
   schoolClass: SchoolClass;
 
-  @OneToMany(() => ClassSection, (classSection) => classSection.created_by)
+  @OneToMany(() => ClassSection, classSection => classSection.created_by)
   class_section: ClassSection;
 
-  @OneToMany(() => ClassSection, (classSection) => classSection.updated_by)
+  @OneToMany(() => ClassSection, classSection => classSection.updated_by)
   class_section_user: ClassSection;
 
-  @OneToMany(() => ClassSection, (classSection) => classSection.class_teacher)
+  @OneToMany(() => ClassSection, classSection => classSection.class_teacher)
   class_teacher: ClassSection;
 
-  @OneToMany(() => ClassSection, (classSection) => classSection.class_monitor)
+  @OneToMany(() => ClassSection, classSection => classSection.class_monitor)
   class_monitor: ClassSection;
+
+  @OneToOne(() => Student, student => student.user)
+  student: Student;
+
+  @OneToOne(() => Teacher, teacher => teacher.user)
+  teacher: Teacher;
 }
