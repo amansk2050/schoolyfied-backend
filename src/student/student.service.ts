@@ -3,23 +3,24 @@ import {
   Logger,
   NotFoundException,
   InternalServerErrorException,
-} from '@nestjs/common';
-import { CreateStudentDto } from './dto/create-student.dto';
-import { Student } from './entities/student.entity';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { SchoolService } from 'src/school/school.service';
-import { UserService } from 'src/user/user.service';
-
+} from "@nestjs/common";
+import { CreateStudentDto } from "./dto/create-student.dto";
+import { Student } from "./entities/student.entity";
+import { Repository } from "typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { SchoolService } from "src/school/school.service";
+import { UserService } from "src/user/user.service";
+import { UserRoles } from "src/user/enums/role.enum";
+import * as crypto from "crypto";
 @Injectable()
 export class StudentService {
-  private readonly logger = new Logger('STUDENT');
+  private readonly logger = new Logger("STUDENT");
 
   constructor(
     @InjectRepository(Student)
     private readonly studentRepository: Repository<Student>,
     private readonly schoolService: SchoolService,
-    private readonly userService: UserService,
+    private readonly userService: UserService
   ) {}
 
   /**
@@ -34,20 +35,29 @@ export class StudentService {
         primary_contact_number,
         school_id,
         school_class_id,
-        user_id,
+        fullName,
+        email,
         parent_details,
         medical_details,
       } = createStudentDto;
 
-      const user = await this.userService.getUserById(user_id);
-      if (!user) throw new NotFoundException('User not found');
+      this.logger.log(`Generating random password`);
+      const password = await this.generateRandomPassword(13);
+
+      this.logger.log(`Creating user`);
+      const { user } = await this.userService.createUser({
+        fullName,
+        email,
+        password,
+        roles: [UserRoles.STUDENT, UserRoles.USER],
+      });
 
       const school = await this.schoolService.getSchoolById(school_id);
-      if (!school) throw new NotFoundException('School not found');
+      if (!school) throw new NotFoundException("School not found");
 
       const schoolClass =
         await this.schoolService.getSchoolClassById(school_class_id);
-      if (!schoolClass) throw new NotFoundException('School class not found');
+      if (!schoolClass) throw new NotFoundException("School class not found");
 
       this.logger.log(`Creating student`);
       const student = this.studentRepository.create({
@@ -63,7 +73,7 @@ export class StudentService {
       return student;
     } catch (error) {
       this.logger.error(`Error while creating student ${error.message}`);
-      throw new InternalServerErrorException('Error while creating student');
+      throw new InternalServerErrorException("Error while creating student");
     }
   }
 
@@ -83,12 +93,24 @@ export class StudentService {
           school_class: true,
         },
       });
-      if (!student) throw new NotFoundException('Student not found');
+      if (!student) throw new NotFoundException("Student not found");
       this.logger.log(`Student fetched successfully`);
       return student;
     } catch (error) {
       this.logger.error(`Error while fetching student ${error.message}`);
-      throw new InternalServerErrorException('Error while fetching student');
+      throw new InternalServerErrorException("Error while fetching student");
     }
+  }
+
+  /**
+   * geerates random password
+   * @param length length of password
+   * @returns random password
+   * */
+  async generateRandomPassword(length: number): Promise<string> {
+    return crypto
+      .randomBytes(Math.ceil(length / 2))
+      .toString("hex") // Convert bytes to hex string
+      .slice(0, length); // Trim to desired length
   }
 }

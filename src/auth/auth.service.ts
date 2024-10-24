@@ -5,29 +5,29 @@ import {
   NotAcceptableException,
   NotFoundException,
   UnauthorizedException,
-} from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import * as crypto from 'crypto';
-import { Request } from 'express';
-import { MailService } from '../mail/mail.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { JwtPayload } from './dto/jwt-payload.dto';
-import { LoginUserDto } from './dto/login-user.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
-import { UpdateMyPasswordDto } from './dto/update-password.dto';
-import { User } from '../user/entities/user.entity';
-import { Repository } from 'typeorm';
-import { argon2hash, argon2verify } from './argon2/argon2';
-import { ConfigService } from '@nestjs/config';
-import { UserService } from 'src/user/user.service';
-import { InjectRepository } from '@nestjs/typeorm';
+} from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import * as crypto from "crypto";
+import { Request } from "express";
+import { MailService } from "../mail/mail.service";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { JwtPayload } from "./dto/jwt-payload.dto";
+import { LoginUserDto } from "./dto/login-user.dto";
+import { ResetPasswordDto } from "./dto/reset-password.dto";
+import { UpdateMyPasswordDto } from "./dto/update-password.dto";
+import { User } from "../user/entities/user.entity";
+import { Repository } from "typeorm";
+import { argon2hash, argon2verify } from "./argon2/argon2";
+import { ConfigService } from "@nestjs/config";
+import { UserService } from "src/user/user.service";
+import { InjectRepository } from "@nestjs/typeorm";
 
 /**
  * This service contain contains all methods and business logic for authentication such as login, signup, password reset, etc.
  */
 @Injectable()
 export class AuthService {
-  private readonly logger = new Logger('AUTH');
+  private readonly logger = new Logger("AUTH");
 
   private _FR_HOST: string;
 
@@ -59,10 +59,10 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
-    private readonly userService: UserService,
+    private readonly userService: UserService
   ) {
     this.FR_HOST = configService.get(
-      `FR_BASE_URL_${configService.get('STAGE').toUpperCase()}`,
+      `FR_BASE_URL_${configService.get("STAGE").toUpperCase()}`
     );
   }
 
@@ -74,17 +74,17 @@ export class AuthService {
    */
   async signup(
     createUserDto: CreateUserDto,
-    req: Request,
+    req: Request
   ): Promise<{ user: User; token: string }> {
-    this.logger.log('Create and Save user');
+    this.logger.log("Create and Save user");
     const { user, activateToken } =
       await this.userService.createUser(createUserDto);
 
-    this.logger.log('Login the user and send the token and mail');
+    this.logger.log("Login the user and send the token and mail");
     const token: string = await this.signTokenSendEmailAndSMS(
       user,
       req,
-      activateToken,
+      activateToken
     );
 
     return { user, token };
@@ -96,17 +96,17 @@ export class AuthService {
    * @returns true | false
    */
   async activateAccount(token: string) {
-    this.logger.log('Generating token');
-    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    this.logger.log("Generating token");
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-    this.logger.log('Searching User with activation token');
+    this.logger.log("Searching User with activation token");
     const user = await this.userRepository.findOne({
       where: { activeToken: hashedToken },
     });
 
-    if (!user) throw new BadRequestException('Invalid token or token expired');
+    if (!user) throw new BadRequestException("Invalid token or token expired");
 
-    this.logger.log('Activate Account');
+    this.logger.log("Activate Account");
     user.active = true;
     user.activeToken = null;
 
@@ -115,7 +115,7 @@ export class AuthService {
     //NOTE: FOR UI
     const profile = `${this.FR_HOST}/accounts/profile`;
 
-    this.logger.log('Send account activation mail to user');
+    this.logger.log("Send account activation mail to user");
     this.mailService.sendUserAccountActivationMail(user, profile);
 
     return true;
@@ -129,10 +129,10 @@ export class AuthService {
   async loginPassport(loginUserDto: LoginUserDto) {
     const { email, password } = loginUserDto;
 
-    this.logger.log('Searching User with provided email');
+    this.logger.log("Searching User with provided email");
     const user = await this.userRepository.findOne({ where: { email } });
 
-    this.logger.log('Verifying User');
+    this.logger.log("Verifying User");
     if (user && (await argon2verify(user.password, password))) {
       return user;
     }
@@ -147,7 +147,7 @@ export class AuthService {
    */
   async loginGoogle(req: Request) {
     if (!req.user) {
-      throw new NotFoundException('User Not Found');
+      throw new NotFoundException("User Not Found");
     }
 
     const { existingUser, sendMail, newUser, activateToken } =
@@ -160,7 +160,7 @@ export class AuthService {
     if (sendMail) {
       token = await this.signTokenSendEmailAndSMS(user, req, activateToken);
     } else {
-      this.logger.log('Existing User, Logging In');
+      this.logger.log("Existing User, Logging In");
       token = await this.signToken(user);
     }
 
@@ -177,7 +177,7 @@ export class AuthService {
    */
   async signToken(user: any): Promise<string> {
     const payload: JwtPayload = { id: user.id };
-    this.logger.log('Signing token');
+    this.logger.log("Signing token");
 
     return this.jwtService.sign(payload);
   }
@@ -189,26 +189,26 @@ export class AuthService {
    * @returns signed token which is used for authentication.
    */
   async forgotPassword(email: string, req: Request) {
-    this.logger.log('Searching User with provided email');
+    this.logger.log("Searching User with provided email");
     const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) {
-      throw new NotFoundException('User Not Found');
+      throw new NotFoundException("User Not Found");
     }
 
-    this.logger.log('Creating password reset token');
+    this.logger.log("Creating password reset token");
     const resetToken: string =
       await this.userService.createPasswordResetToken(user);
 
     const resetURL = `${req.protocol}://${req.get(
-      'host',
+      "host"
     )}/api/v1/auth/reset-password/${resetToken}`;
     //NOTE: FOR UI
     // const resetURL = `${req.protocol}://${req.get("host")}/resetPassword/${resetToken}`;
     // const resetURL = `${this.FR_HOST}/auth/reset-password/${resetToken}`;
 
     try {
-      this.logger.log('Sending password reset token mail');
+      this.logger.log("Sending password reset token mail");
       this.mailService.sendForgotPasswordMail(email, resetURL);
 
       return true;
@@ -227,26 +227,26 @@ export class AuthService {
    * @returns a string "valid token" if the token is valid.
    */
   async verifyToken(token: string) {
-    this.logger.log('Generating hash from token');
-    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    this.logger.log("Generating hash from token");
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-    this.logger.log('Retrieving user');
+    this.logger.log("Retrieving user");
     const user: User = await this.userRepository.findOne({
       where: { passwordResetToken: hashedToken },
     });
 
     if (!user)
       throw new BadRequestException(
-        "The user belonging to this token doesn't exist",
+        "The user belonging to this token doesn't exist"
       );
 
-    this.logger.log('Checking if token is valid');
+    this.logger.log("Checking if token is valid");
     const resetTime: number = +user.passwordResetExpires;
     if (Date.now() >= resetTime) {
-      throw new BadRequestException('Invalid token or token expired');
+      throw new BadRequestException("Invalid token or token expired");
     }
 
-    return 'valid token';
+    return "valid token";
   }
 
   /**
@@ -258,41 +258,41 @@ export class AuthService {
   async resetPassword(token: string, resetPassword: ResetPasswordDto) {
     const { password, passwordConfirm } = resetPassword;
 
-    this.logger.log('Checking Password equality');
+    this.logger.log("Checking Password equality");
     if (password !== passwordConfirm) {
       throw new NotAcceptableException(
-        'password and passwordConfirm should match',
+        "password and passwordConfirm should match"
       );
     }
 
-    this.logger.log('Generating hash from token');
-    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    this.logger.log("Generating hash from token");
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-    this.logger.log('Retrieving user');
+    this.logger.log("Retrieving user");
     const user: User = await this.userRepository.findOne({
       where: { passwordResetToken: hashedToken },
     });
 
-    if (!user) throw new BadRequestException('Invalid token or token expired');
+    if (!user) throw new BadRequestException("Invalid token or token expired");
 
-    this.logger.log('Checking if token is valid');
+    this.logger.log("Checking if token is valid");
     const resetTime: number = +user.passwordResetExpires;
     if (Date.now() >= resetTime) {
-      throw new BadRequestException('Invalid token or token expired');
+      throw new BadRequestException("Invalid token or token expired");
     }
 
-    this.logger.log('Hashing the password');
+    this.logger.log("Hashing the password");
     user.password = await argon2hash(password);
 
     user.passwordResetExpires = null;
     user.passwordResetToken = null;
 
-    this.logger.log('Update the user password');
+    this.logger.log("Update the user password");
     const updatedUser: User = await this.userRepository.save(user);
 
     const newToken: string = await this.signToken(updatedUser);
 
-    this.logger.log('Sending reset password confirmation mail');
+    this.logger.log("Sending reset password confirmation mail");
     this.mailService.sendPasswordResetConfirmationMail(user);
 
     return { updatedUser, newToken };
@@ -307,34 +307,34 @@ export class AuthService {
   async updateMyPassword(updateMyPassword: UpdateMyPasswordDto, user: User) {
     const { passwordCurrent, password, passwordConfirm } = updateMyPassword;
 
-    this.logger.log('Verifying current password from user');
+    this.logger.log("Verifying current password from user");
     if (!(await argon2verify(user.password, passwordCurrent))) {
-      throw new UnauthorizedException('Invalid password');
+      throw new UnauthorizedException("Invalid password");
     }
 
     if (password === passwordCurrent) {
       throw new BadRequestException(
-        'New password and old password can not be same',
+        "New password and old password can not be same"
       );
     }
 
     if (password !== passwordConfirm) {
       throw new BadRequestException(
-        'Password does not match with passwordConfirm',
+        "Password does not match with passwordConfirm"
       );
     }
 
-    this.logger.log('Masking Password');
+    this.logger.log("Masking Password");
     const hashedPassword = await argon2hash(password);
     user.password = hashedPassword;
 
-    this.logger.log('Saving Updated User');
+    this.logger.log("Saving Updated User");
     await this.userRepository.save(user);
 
-    this.logger.log('Sending password update mail');
+    this.logger.log("Sending password update mail");
     this.mailService.sendPasswordUpdateEmail(user);
 
-    this.logger.log('Login the user and send the token again');
+    this.logger.log("Login the user and send the token again");
     const token: string = await this.signToken(user);
 
     return { user, token };
@@ -347,7 +347,7 @@ export class AuthService {
    */
   async deleteMyAccount(user: User): Promise<boolean> {
     // TODO: Method to be implemented by developer
-    throw new BadRequestException('Method not implemented.');
+    throw new BadRequestException("Method not implemented.");
   }
 
   /**
@@ -357,29 +357,29 @@ export class AuthService {
    * @returns updated user object containing user information and token which is used for authentication.
    */
   async sendAccountActivationMail(user: User, req: Request) {
-    this.logger.log('Creating token');
-    const activateToken: string = crypto.randomBytes(32).toString('hex');
+    this.logger.log("Creating token");
+    const activateToken: string = crypto.randomBytes(32).toString("hex");
 
-    this.logger.log('Generating and saving token hash');
+    this.logger.log("Generating and saving token hash");
     user.activeToken = crypto
-      .createHash('sha256')
+      .createHash("sha256")
       .update(activateToken)
-      .digest('hex');
+      .digest("hex");
 
     await this.userRepository.save(user);
 
-    this.logger.log('Creating activation url');
+    this.logger.log("Creating activation url");
     const activeURL = `${req.protocol}://${req.get(
-      'host',
+      "host"
     )}/api/v1/auth/activate/${activateToken}`;
     //NOTE: FOR UI
     // const activeURL = `${req.protocol}://${req.get("host")}/activate/${activateToken}`;
     // const activeURL = `${this.FR_HOST}/auth/activate/${activateToken}`;
 
-    this.logger.log('Sending activtion mail');
+    this.logger.log("Sending activtion mail");
     this.mailService.sendUserActivationToken(user, activeURL);
 
-    return 'success';
+    return "success";
   }
 
   /**
@@ -392,20 +392,20 @@ export class AuthService {
   private async signTokenSendEmailAndSMS(
     user: User,
     req: Request,
-    activateToken: string,
+    activateToken: string
   ) {
-    this.logger.log('User Created');
+    this.logger.log("User Created");
 
     const token: string = await this.signToken(user);
 
     const activeURL = `${req.protocol}://${req.get(
-      'host',
+      "host"
     )}/api/v1/auth/activate/${activateToken}`;
     //NOTE: FOR UI
     // const activeURL = `${req.protocol}://${req.get("host")}/activate/${activateToken}`;
     // const activeURL = `${this.FR_HOST}/auth/activate/${activateToken}`;
 
-    this.logger.log('Sending welcome email');
+    this.logger.log("Sending welcome email");
     this.mailService.sendUserConfirmationMail(user, activeURL);
 
     // TODO: Send confirmation SMS to new user using Twilio

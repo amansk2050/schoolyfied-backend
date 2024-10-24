@@ -1,5 +1,5 @@
-import { School } from 'src/school/entities/school.entity';
-import { User } from 'src/user/entities/user.entity';
+import { School } from "src/school/entities/school.entity";
+import { User } from "src/user/entities/user.entity";
 import {
   Column,
   CreateDateColumn,
@@ -7,23 +7,23 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from 'typeorm';
+} from "typeorm";
 
-@Entity('teachers')
+@Entity("teachers")
 export class Teacher {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
   /**
    * user refernce from user entity
    */
-  @OneToOne(() => User, user => user.teacher)
+  @OneToOne(() => User, (user) => user.teacher)
   user: User;
 
   /**
    * school refernce from school entity
    * */
-  @OneToOne(() => School, school => school.teacher)
+  @OneToOne(() => School, (school) => school.teacher)
   school: School;
 
   /**
@@ -35,7 +35,7 @@ export class Teacher {
   /**
    * status of teacher - active or inactive
    * */
-  @Column({ type: 'boolean', default: true })
+  @Column({ type: "boolean", default: true })
   active: boolean;
 
   /**
@@ -53,19 +53,19 @@ export class Teacher {
   /**
    * employee id of teacher
    * */
-  @Column({ type: 'int', generated: 'increment' })
+  @Column({ type: "int", generated: "increment" })
   employee_id: number;
 
   /**
    * address of teacher
    * */
-  @Column({ type: 'json', default: null })
+  @Column({ type: "json", default: null })
   address: JSON;
 
   /**
    * expreince of teacher
    * */
-  @Column({ type: 'int', default: 0 })
+  @Column({ type: "int", default: 0 })
   experience_years: number;
 
   /**
@@ -77,6 +77,6 @@ export class Teacher {
   /**
    * salary of teacher
    * */
-  @Column({ type: 'int' })
+  @Column({ type: "int" })
   salary: number;
 }
